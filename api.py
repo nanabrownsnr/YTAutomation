@@ -52,6 +52,7 @@ class FileUpload(BaseModel):
     filename: str
     file_data: str  # Base64 string
 
+
 @app.post("/upload-base64")
 async def upload_base64(payload: FileUpload):
     try:
@@ -59,29 +60,11 @@ async def upload_base64(payload: FileUpload):
     except Exception as e:
         raise HTTPException(status_code=400, detail="Invalid base64 data")
 
-    # Save temporarily to detect audio duration if needed
-    with NamedTemporaryFile(delete=False, suffix=os.path.splitext(payload.filename)[1]) as tmp:
-        tmp.write(binary_data)
-        tmp_path = tmp.name
-
     # Upload to GridFS
     file_id = await fs.upload_from_stream(payload.filename, binary_data)
     file_id = str(file_id)
 
-    # Check for audio and get duration
-    mime_type, _ = mimetypes.guess_type(payload.filename)
-    duration = None
-
-    if mime_type and mime_type.startswith("audio"):
-        try:
-            audio = AudioSegment.from_file(tmp_path)
-            duration = round(audio.duration_seconds, 2)
-        except Exception as e:
-            print("Audio parsing error:", e)
-
-    os.remove(tmp_path)
-
-    return {"file_id": file_id, "duration": duration}
+    return {"file_id": file_id}
 
 
 #### Video Generation Endpoints ####
