@@ -75,20 +75,34 @@ class SceneData(BaseModel):
 
 
 # Sample SceneData
-# scene_data = {
-#     "Audio.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+# scene_data =
 
-#     "Image.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#     "Text.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+# scene_data = {
+#     "template_id": "50c3028d-2255-4c7d-b284-aa117fe28672",
+#     "modifications": {
+#         "Audio-1.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+#         "Image-1.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
+#         "Text-1.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+#         "Audio-2.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+#         "Image-2.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
+#         "Text-2.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+#         "Audio-3.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+#         "Image-3.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
+#         "Text-3.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+#         "Audio-4.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+#         "Image-4.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
+#         "Text-4.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+#         "Audio-5.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+#         "Image-5.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
+#         "Text-5.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
+#     },
+#     "webhook_url": "",
 # }
 
 
 @app.post("/generate-video")
 async def generate_video(data: SceneData):
-    payload = {
-        "template_id": "67e6b0f9-57fe-48d4-8470-8e3e6d0a5f03",
-        "modifications": data.scene_data,
-    }
+    payload = data.scene_data
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {CREATOMATE_API_KEY}",
