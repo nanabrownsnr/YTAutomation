@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Request
+from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 import os
@@ -6,6 +6,12 @@ from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorGridFSBucket
 import requests
+from bson import ObjectId
+from pydub import AudioSegment
+from tempfile import NamedTemporaryFile
+import base64
+import mimetypes
+import os
 
 load_dotenv()
 
@@ -42,6 +48,42 @@ async def get_file(file_id: str):
     return StreamingResponse(download_stream, media_type="application/octet-stream")
 
 
+class FileUpload(BaseModel):
+    filename: str
+    file_data: str  # Base64 string
+
+@app.post("/upload-base64")
+async def upload_base64(payload: FileUpload):
+    try:
+        binary_data = base64.b64decode(payload.file_data)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail="Invalid base64 data")
+
+    # Save temporarily to detect audio duration if needed
+    with NamedTemporaryFile(delete=False, suffix=os.path.splitext(payload.filename)[1]) as tmp:
+        tmp.write(binary_data)
+        tmp_path = tmp.name
+
+    # Upload to GridFS
+    file_id = await fs.upload_from_stream(payload.filename, binary_data)
+    file_id = str(file_id)
+
+    # Check for audio and get duration
+    mime_type, _ = mimetypes.guess_type(payload.filename)
+    duration = None
+
+    if mime_type and mime_type.startswith("audio"):
+        try:
+            audio = AudioSegment.from_file(tmp_path)
+            duration = round(audio.duration_seconds, 2)
+        except Exception as e:
+            print("Audio parsing error:", e)
+
+    os.remove(tmp_path)
+
+    return {"file_id": file_id, "duration": duration}
+
+
 #### Video Generation Endpoints ####
 
 
@@ -52,6 +94,7 @@ class SceneData(BaseModel):
 # Sample SceneData
 # scene_data = {
 #     "Audio.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
+
 #     "Image.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
 #     "Text.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
 # }
@@ -77,4 +120,4 @@ async def generate_video(data: SceneData):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("db:app", host="0.0.0.0", port=7999, reload=True)
+    uvicorn.run("api:app", host="0.0.0.0", port=7999, reload=True)
