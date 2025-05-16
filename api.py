@@ -24,7 +24,6 @@ try:
     print("MongoDB connection established and file storage set.")
 except Exception as e:
     print(f"MongoDB connection error: {str(e)}")
-CREATOMATE_API_KEY = os.getenv("CREATOMATE_API_KEY")
 
 app = FastAPI()
 
