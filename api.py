@@ -67,52 +67,6 @@ async def upload_base64(payload: FileUpload):
     return {"file_id": file_id}
 
 
-#### Video Generation Endpoints ####
-
-
-class SceneData(BaseModel):
-    scene_data: dict  # Accepts any dict as body
-
-
-# Sample SceneData
-# scene_data =
-
-# scene_data = {
-#     "template_id": "50c3028d-2255-4c7d-b284-aa117fe28672",
-#     "modifications": {
-#         "Audio-1.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-#         "Image-1.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#         "Text-1.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
-#         "Audio-2.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-#         "Image-2.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#         "Text-2.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
-#         "Audio-3.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-#         "Image-3.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#         "Text-3.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
-#         "Audio-4.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-#         "Image-4.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#         "Text-4.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
-#         "Audio-5.source": "https://creatomate.com/files/assets/b5dc815e-dcc9-4c62-9405-f94913936bf5",
-#         "Image-5.source": "https://creatomate.com/files/assets/4a7903f0-37bc-48df-9d83-5eb52afd5d07",
-#         "Text-5.text": "Did you know you can automate TikTok, Instagram, and YouTube videos? 🔥",
-#     },
-#     "webhook_url": "",
-# }
-
-
-@app.post("/generate-video")
-async def generate_video(data: SceneData):
-    payload = data.scene_data
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {CREATOMATE_API_KEY}",
-    }
-
-    response = requests.post(
-        "https://api.creatomate.com/v1/renders", json=payload, headers=headers
-    )
-    return response.json()
-
 
 if __name__ == "__main__":
     import uvicorn
